@@ -14,10 +14,7 @@ namespace Order.API.Models.Contexts
         public DbSet<OrderOutbox> OrderOutboxes { get; set; }
 
 
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
-        {
-            modelBuilder.Entity<OrderOutbox>().HasNoKey();
-        }
+
 
     }
 }

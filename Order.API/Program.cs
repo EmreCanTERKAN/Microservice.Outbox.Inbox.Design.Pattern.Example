@@ -1,9 +1,11 @@
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using Order.API.Models.Contexts;
+using Order.API.Models.Entites;
 using Order.API.ViewModels;
 using Shared;
 using Shared.Events;
+using System.Text.Json;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -60,8 +62,22 @@ app.MapPost("/create-post", async (CreateOrderVM model, OrderDbContext orderDbCo
         }).ToList()
     };
     #region Outbox Pattern Olmaksýzýn!
-    var sendEndpoint = await sendEndpointProvider.GetSendEndpoint(new Uri($"queue:{RabbitMQSettings.Stock_OrderCreatedEvent}"));
-    await sendEndpoint.Send<OrderCreatedEvent>(orderCreatedEvent);
+    //var sendEndpoint = await sendEndpointProvider.GetSendEndpoint(new Uri($"queue:{RabbitMQSettings.Stock_OrderCreatedEvent}"));
+    //await sendEndpoint.Send<OrderCreatedEvent>(orderCreatedEvent);
+    #endregion
+
+    #region Outbox Pattern Çalýþmasý
+    OrderOutbox orderOutbox = new()
+    {
+        OccuredOn = DateTime.UtcNow,
+        ProcessedDate = null,
+        Payload = JsonSerializer.Serialize(orderCreatedEvent),
+        Type = orderCreatedEvent.GetType().Name
+       // Type = nameof(OrderCreatedEvent)
+        
+    };
+    await orderDbContext.OrderOutboxes.AddAsync(orderOutbox);
+    await orderDbContext.SaveChangesAsync();
     #endregion
 
 });

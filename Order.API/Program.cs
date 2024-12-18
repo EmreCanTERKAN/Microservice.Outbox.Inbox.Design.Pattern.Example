@@ -2,6 +2,7 @@ using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using Order.API.Models.Contexts;
 using Order.API.ViewModels;
+using Shared;
 using Shared.Events;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -58,6 +59,10 @@ app.MapPost("/create-post", async (CreateOrderVM model, OrderDbContext orderDbCo
             ProductId = oi.ProductId,
         }).ToList()
     };
+    #region Outbox Pattern Olmaksýzýn!
+    var sendEndpoint = await sendEndpointProvider.GetSendEndpoint(new Uri($"queue:{RabbitMQSettings.Stock_OrderCreatedEvent}"));
+    await sendEndpoint.Send<OrderCreatedEvent>(orderCreatedEvent);
+    #endregion
 
 });
 

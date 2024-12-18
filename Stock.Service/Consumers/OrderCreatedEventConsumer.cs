@@ -1,4 +1,5 @@
 ﻿using MassTransit;
+using Shared.Events;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,11 +9,10 @@ using System.Threading.Tasks;
 
 namespace Stock.Service.Consumers
 {
-    public class OrderCreatedEventConsumer : IConsumer<OrderCreatedEventConsumer>
+    public class OrderCreatedEventConsumer : IConsumer<OrderCreatedEvent>
     {
-        public async Task Consume(ConsumeContext<OrderCreatedEventConsumer> context)
+        public async Task Consume(ConsumeContext<OrderCreatedEvent> context)
         {
-            // Sade bir şekilde inbox patterne odaklanacağımız için stock işlemlerini mış gibi yapıyoruz.
             await Console.Out.WriteLineAsync(JsonSerializer.Serialize(context.Message));
         }
     }

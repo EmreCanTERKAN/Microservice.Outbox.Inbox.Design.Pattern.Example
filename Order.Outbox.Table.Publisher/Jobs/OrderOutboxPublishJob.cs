@@ -29,6 +29,7 @@ namespace Order.Outbox.Table.Publisher.Jobs
                     }
                 }
             }
+
             OrderOutboxSingletonDatabase.DataReaderReady();
             await Console.Out.WriteLineAsync("Order outbox table checked!");
         }

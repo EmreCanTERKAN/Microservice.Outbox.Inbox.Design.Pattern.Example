@@ -8,7 +8,7 @@ namespace Order.Outbox.Table.Publisher.Entities
 {
     public class OrderOutBox
     {
-        public int Id { get; set; }
+        public Guid IdempotentToken { get; set; }
         public DateTime OccuredOn { get; set; }
 
         // Veriyi eklediğimizde hemen işlemeyeceğinden dolayı bu null olacaktır...

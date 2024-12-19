@@ -17,20 +17,29 @@ namespace Stock.Service.Consumers
     {
         public async Task Consume(ConsumeContext<OrderCreatedEvent> context)
         {
-            await stockDbContext.OrderInBoxes.AddAsync(new()
+
+            var result = await stockDbContext.OrderInBoxes.AnyAsync(i => i.IdempotentToken == context.Message.IdempotentToken);
+
+            if (!result)
             {
-                Processed = false,
-                Payload = JsonSerializer.Serialize(context.Message)
-            });
-            await stockDbContext.SaveChangesAsync();
-            await Console.Out.WriteLineAsync(JsonSerializer.Serialize(context.Message));
+                await stockDbContext.OrderInBoxes.AddAsync(new()
+                {
+                    Processed = false,
+                    Payload = JsonSerializer.Serialize(context.Message),
+                    IdempotentToken = context.Message.IdempotentToken
+                    
+                });
+                await stockDbContext.SaveChangesAsync();
+
+
+            }
 
             List<OrderInbox> orderInboxes = await stockDbContext.OrderInBoxes.Where(i => i.Processed == false).ToListAsync();
 
             foreach (var orderInbox in orderInboxes)
             {
                 OrderCreatedEvent orderCreatedEvent = JsonSerializer.Deserialize<OrderCreatedEvent>(orderInbox.Payload);
-                await Console.Out.WriteAsync($"{orderCreatedEvent.OrderId} order id değerine karşılık olan siparişin stok işlmeleri başarıyla tamamlanmıştır.");
+                Console.WriteLine($"{orderCreatedEvent.OrderId} order id değerine karşılık olan siparişin stok işlmeleri başarıyla tamamlanmıştır.");
                 orderInbox.Processed = true;
                 await stockDbContext.SaveChangesAsync();
             }

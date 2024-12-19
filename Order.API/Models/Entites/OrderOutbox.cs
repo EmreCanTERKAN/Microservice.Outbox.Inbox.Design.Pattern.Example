@@ -1,10 +1,13 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
 
 namespace Order.API.Models.Entites
 {
     public class OrderOutbox 
     {
-        public int Id { get; set; }
+        //idenpotent
+        [Key]
+        public Guid IdempotentToken { get; set; }
         public DateTime OccuredOn { get; set; }
 
         // Veriyi eklediğimizde hemen işlemeyeceğinden dolayı bu null olacaktır...

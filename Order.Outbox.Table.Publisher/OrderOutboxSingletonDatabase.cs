@@ -28,7 +28,7 @@ namespace Order.Outbox.Table.Publisher
             }
         }
 
-        // Select sorgularını bu fonksiyonla göndereceğiz.
+        // Select sorgularını bu fonksiyonlarla göndereceğiz.
         public static async Task<IEnumerable<T>> QueryAsync<T>(string sql) => await _connection.QueryAsync<T>(sql);
         public static async Task<int> ExecuteAsync(string sql) => await _connection.ExecuteAsync(sql);
         public static void DataReaderReady() => _dataReaderState = true;
